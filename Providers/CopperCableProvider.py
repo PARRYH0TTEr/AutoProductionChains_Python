@@ -11,6 +11,7 @@ from draftsman.prototypes import inserter
 from draftsman.prototypes import assembling_machine
 from draftsman.prototypes import transport_belt
 
+
 class CopperCableProvider:
 
     name = "coppercable"

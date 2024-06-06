@@ -12,7 +12,6 @@ from draftsman.prototypes import inserter
 from draftsman.prototypes import furnace
 from draftsman.prototypes import transport_belt
 
-from Util.NewEntityGenerator import NewEntityGenerator
 
 class CopperplateProvider:
 

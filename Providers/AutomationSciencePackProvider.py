@@ -1,14 +1,11 @@
 from Providers.CopperplateProvider import CopperplateProvider
 from Providers.IronGearWheelProvider import IronGearWheelProvider
 
-
 from Util.InserterDirectionEnum import InserterDirectionEnum
 from Util.TransportBeltDirectionEnum import TransportBeltDirectionEnum
 
-
 from draftsman.entity import new_entity
 from draftsman.entity import Entity
-#from typing import List
 
 from typing import *
 
@@ -16,7 +13,6 @@ from draftsman.prototypes import inserter
 from draftsman.prototypes import assembling_machine
 from draftsman.prototypes import transport_belt
 
-from Util.NewEntityGenerator import NewEntityGenerator
 
 class AutomationSciencePackProvider:
 

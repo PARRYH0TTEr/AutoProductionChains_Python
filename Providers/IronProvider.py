@@ -2,7 +2,6 @@ from draftsman.entity import new_entity
 from draftsman.entity import Entity
 from Util.InserterDirectionEnum import InserterDirectionEnum
 from Util.TransportBeltDirectionEnum import TransportBeltDirectionEnum
-#from typing import List
 
 from typing import *
 
@@ -10,7 +9,6 @@ from draftsman.prototypes import inserter
 from draftsman.prototypes import infinity_container
 from draftsman.prototypes import transport_belt
 
-from Util.NewEntityGenerator import NewEntityGenerator
 
 class IronProvider:
 

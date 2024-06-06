@@ -21,24 +21,6 @@ from Providers.IronGearWheelProvider import IronGearWheelProvider
 from Providers.AutomationSciencePackProvider import AutomationSciencePackProvider
 from Providers.CopperCableProvider import CopperCableProvider
 
-#IMPORTANT 1.1 -> Add the sourcecode to Github. Get version control working (but do not remove old code,
-#               -> might be worth to compare the two programs that generate the same blueprint to compare performance)
-
-
-
-#IMPORTANT 2.1 -> Each provider should have a list of all the structures/processes that it contains
-#               -> and then the Build<Dir> should just adjust the tile_position and direction of the objects.
-#               -> We do this so that we can pass a specific structure and thereby specific tile_position
-#               -> (which translates to an anchor point) for all subsequent structures/children
-
-
-#          ->  
-
-
-
-
-#TODO1.1 -> FIXME1.1
-
 
 #TODO1.2 -> At the moment, denoting the rate at which the graph should provide the desired output does nothing.
 #        -> Make it (somewhat) dynamic in choosing which it should use, perhaps by looking up the speed of each and selecting
@@ -47,6 +29,8 @@ from Providers.CopperCableProvider import CopperCableProvider
 
 #TODO1.3 -> Implement a graph class that represents the "m-ary tree" that should be used to represent the graph
 #        -> Look into using Graphviz
+#
+#        -> 'treelib' provides a '.to_graphviz(...)' method that can convert a tree to a graph equivalent.
 
 
 
