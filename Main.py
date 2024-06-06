@@ -216,17 +216,30 @@ def main():
                 tree = Tree()
                 rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
                 
+                # Have to create the child node of the final output, because the defaultAnchor does
+                #   not have any providers in its dependency list
                 lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
 
+                # Construct the n-ary tree
                 AddNode(tree, lastProductionNode_NODE)
                 
+                # Build the production chain based on the constructed n-ary tree
+                #
+                # The (0,0) anchor point is just a default, not used value for the very first call to the function
+                # 
+                # Could probably just overload the function such a new definition without that anchor for the first call
                 BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
                 
+                # Have to call .to_string() to get the blueprint string
                 output_string = newBlueprint.to_string()
+                
+                # Just some util to automatically copy the above string to the clipboard
                 pyperclip.copy(output_string)
                 
+                # Stop benchmark timer for this iteration
                 end_time = time.perf_counter()
                 
+                # Calculate elapsed benchmark time
                 elapsed_time = end_time - start_time
                 
                 runTimeAccumulator += elapsed_time
@@ -249,6 +262,7 @@ def main():
             # Obviously an even larger amount of iterations would be better
             for i in range(100):
                 
+                # Start benchmark timer for this iteration
                 start_time = time.perf_counter()
 
                 # Initializing the blueprint
@@ -263,17 +277,30 @@ def main():
                 tree = Tree()
                 rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
                 
+                # Have to create the child node of the final output, because the defaultAnchor does
+                #   not have any providers in its dependency list
                 lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
 
+                # Construct the n-ary tree
                 AddNode(tree, lastProductionNode_NODE)
                 
+                # Build the production chain based on the constructed n-ary tree
+                #
+                # The (0,0) anchor point is just a default, not used value for the very first call to the function
+                # 
+                # Could probably just overload the function such a new definition without that anchor for the first call
                 BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
                 
+                # Have to call .to_string() to get the blueprint string
                 output_string = newBlueprint.to_string()
+                
+                # Just some util to automatically copy the above string to the clipboard
                 pyperclip.copy(output_string)
                 
+                # Stop benchmark timer for this iteration
                 end_time = time.perf_counter()
                 
+                # Calculate elapsed benchmark time
                 elapsed_time = end_time - start_time
                 
                 print("")
@@ -303,23 +330,29 @@ def main():
             tree = Tree()
             rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
             
+            # Have to create the child node of the final output, because the defaultAnchor does
+                #   not have any providers in its dependency list
             lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
 
+            # Construct the n-ary tree
             AddNode(tree, lastProductionNode_NODE)
             
+            # Build the production chain based on the constructed n-ary tree
+            #
+            # The (0,0) anchor point is just a default, not used value for the very first call to the function
+            # 
+            # Could probably just overload the function such a new definition without that anchor for the first call
             BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
             
+            # Have to call .to_string() to get the blueprint string
             output_string = newBlueprint.to_string()
+            
+            # Just some util to automatically copy the above string to the clipboard
             pyperclip.copy(output_string)
             
-            tree.to_graphviz(graph='graph')
+            # Used to convert the tree to a graphviz format - only used for report
+            #tree.to_graphviz(graph='graph')
             
-            #end_time = time.perf_counter()
-            
-            #elapsed_time = (end_time - start_time) * 1000
-            
-            # print(" ")
-            # print(f"It took {elapsed_time} milliseconds to generate the production chain")
             print(" ")
             print(f"The blueprint string for the {queryOutput} production chain has been copied to your clipboard and is ready to be pasted into Factorio")
             
