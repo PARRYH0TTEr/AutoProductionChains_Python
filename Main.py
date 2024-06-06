@@ -32,6 +32,8 @@ from Providers.CopperCableProvider import CopperCableProvider
 #
 #        -> 'treelib' provides a '.to_graphviz(...)' method that can convert a tree to a graph equivalent.
 
+#TODO1.4 -> Build direction should be a command line argument
+
 
 
 
@@ -59,10 +61,8 @@ def SelectInitialStructure(init_struct):
         case "automationsciencepack":
             return AutomationSciencePackProvider
         case _:
-            # Should probably not return a string but rather a default empty class\
-            #  to accommodate all other faulty inputs
-            return "Invalid argument"
-
+            # Return the default anchor, if the given outputType doesn't match any of the above (don't want a crash)
+            return DefaultAnchor
 
 
 # For a given process, preemptively return if it does not contain dependencies,
@@ -79,19 +79,6 @@ def AddNode(tree: Tree, parentNode_NODE):
             tempInstance_NODE = tree.create_node(dependency.name, parent=parentNode_NODE.identifier, data=dependency)
             AddNode(tree, tempInstance_NODE)
 
-
-# Simply returns a wooden-chest prototype as the initial anchor point
-def GetDefaultAnchor():
-    
-    resultChest = new_entity("wooden-chest")
-    return resultChest
-
-
-def TestPrintTree(tree: Tree):
-    rootNodeID = tree.root
-    
-    #print(tree.get_node(rootNodeID).data)
-    print(tree.children(rootNodeID))
     
 # Returns an ordered list of build directions
 # The build directions are hand-picked such that the production chain primarly build in two
@@ -106,17 +93,6 @@ def GetAvailableBuildDirections(parentBuildDirection) -> List[str]:
                 return ["east", "north", "south"]
             case "west":
                 return ["west", "north", "south"]
-    
-
-# Deprecated
-# Assumes that the entity does exist in the blueprint
-def FindEntityFromId(blueprint: Blueprint, entityId):
-    entityList = blueprint.find_entities()
-    print(entityList)
-    for entity in entityList:
-        if (entity.id == entityId):
-            return entity
-
 
 
 # Builds a production chain, based in the given "tree"
@@ -244,7 +220,7 @@ def main():
 
                 AddNode(tree, lastProductionNode_NODE)
                 
-                BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+                BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
                 
                 output_string = newBlueprint.to_string()
                 pyperclip.copy(output_string)
@@ -291,7 +267,7 @@ def main():
 
                 AddNode(tree, lastProductionNode_NODE)
                 
-                BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+                BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
                 
                 output_string = newBlueprint.to_string()
                 pyperclip.copy(output_string)
@@ -331,10 +307,12 @@ def main():
 
             AddNode(tree, lastProductionNode_NODE)
             
-            BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+            BuildProductionChain(tree, tree.root, newBlueprint, "south", (0,0))
             
             output_string = newBlueprint.to_string()
             pyperclip.copy(output_string)
+            
+            tree.to_graphviz(graph='graph')
             
             #end_time = time.perf_counter()
             
