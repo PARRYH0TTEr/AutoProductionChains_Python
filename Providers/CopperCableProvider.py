@@ -1,39 +1,31 @@
-from Providers.CoalProvider import CoalProvider
-from Providers.IronProvider import IronProvider
+from Providers.CopperplateProvider import CopperplateProvider
 from Util.InserterDirectionEnum import InserterDirectionEnum
 from Util.TransportBeltDirectionEnum import TransportBeltDirectionEnum
 
-
 from draftsman.entity import new_entity
 from draftsman.entity import Entity
-#from typing import List
 
 from typing import *
 
 from draftsman.prototypes import inserter
-from draftsman.prototypes import furnace
+from draftsman.prototypes import assembling_machine
 from draftsman.prototypes import transport_belt
 
+class CopperCableProvider:
 
-from Util.NewEntityGenerator import NewEntityGenerator
-
-
-class IronplateProvider:
-
-    name = "ironplate"
-    dependencies = [CoalProvider, IronProvider]
+    name = "coppercable"
+    dependencies = [CopperplateProvider]
 
     def __init__(self, blueprint, anchor):
         self.blueprint = blueprint
         self.anchor: Entity = anchor
         self.ownPrototypes = self.InitOwnPrototypes()
         self.propagationAnchor = self.ownPrototypes[-1].id
-
-
-    # Initializes the list of prototypes in the current structure/process
-    def InitOwnPrototypes(self) -> List[Entity]:
+        
+        
+    def InitOwnPrototypes(self):
         ownPrototypesContainer = []
-
+        
         # Index 0 & 1 (output)
         
         FastInserter1: inserter = new_entity("fast-inserter")
@@ -42,24 +34,25 @@ class IronplateProvider:
         FastInserter2: inserter = new_entity("fast-inserter")
         
         # Index 2
-        StoneFurnace1: furnace = new_entity("stone-furnace")
-
+        AssemMach11: assembling_machine = new_entity("assembling-machine-1")
+        AssemMach11.recipe = "copper-cable"
+        
         ownPrototypesContainer.append(FastInserter1)
         ownPrototypesContainer.append(OutputBelt1)
         ownPrototypesContainer.append(OutputBelt2)
         ownPrototypesContainer.append(FastInserter2)
         
-        ownPrototypesContainer.append(StoneFurnace1)
+        ownPrototypesContainer.append(AssemMach11)
         
-
         return ownPrototypesContainer
-
-
+        
+        
+    
     # Simple function to loop over every prototype in ownPrototypes and adds it to the blueprint
     def AddPrototypesToBlueprint(self):
         for prototype in self.ownPrototypes:
             self.blueprint.entities.append(prototype)
-
+    
 
     def SelectBuildOffset(self, offset):
         match offset:
@@ -193,7 +186,3 @@ class IronplateProvider:
                                                self.ownPrototypes[3].tile_position['y'])
         
         self.AddPrototypesToBlueprint()
-        
-        
-        
-        

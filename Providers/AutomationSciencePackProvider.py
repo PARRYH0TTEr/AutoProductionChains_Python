@@ -24,10 +24,9 @@ class AutomationSciencePackProvider:
     dependencies = [CopperplateProvider, IronGearWheelProvider]
     #dependencies = []
 
-    def __init__(self, blueprint, anchor, newEntityGenerator_globalInstance):
+    def __init__(self, blueprint, anchor):
         self.blueprint = blueprint
         self.anchor: Entity = anchor
-        self.newEntityGenerator: NewEntityGenerator = newEntityGenerator_globalInstance
         self.ownPrototypes = self.InitOwnPrototypes()
         self.propagationAnchor = self.ownPrototypes[-1].id
         

@@ -19,7 +19,7 @@ from Providers.CopperProvider import CopperProvider
 from Providers.CopperplateProvider import CopperplateProvider
 from Providers.IronGearWheelProvider import IronGearWheelProvider
 from Providers.AutomationSciencePackProvider import AutomationSciencePackProvider
-from Util.NewEntityGenerator import NewEntityGenerator
+from Providers.CopperCableProvider import CopperCableProvider
 
 #IMPORTANT 1.1 -> Add the sourcecode to Github. Get version control working (but do not remove old code,
 #               -> might be worth to compare the two programs that generate the same blueprint to compare performance)
@@ -70,6 +70,8 @@ def SelectInitialStructure(init_struct):
             return CopperplateProvider
         case "irongearwheel":
             return IronGearWheelProvider
+        case "coppercable":
+            return CopperCableProvider
         case "automationsciencepack":
             return AutomationSciencePackProvider
         case _:
@@ -134,7 +136,7 @@ def FindEntityFromId(blueprint: Blueprint, entityId):
 
 
 # Builds a production chain, based in the given "tree"
-def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeBuildDirection, parentAnchor, newEntityGenerator_globalInstance):
+def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeBuildDirection, parentAnchor):
     #print(tree)
     #print(" ")
     
@@ -147,7 +149,7 @@ def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeB
     if (treeNode.is_root()):
         
         # Instantiate the current node (because the "tree" is build of classes and not objects)
-        treeNode_ItemProvider_instance: DefaultAnchor = treeNode.data(blueprint, newEntityGenerator_globalInstance)
+        treeNode_ItemProvider_instance: DefaultAnchor = treeNode.data(blueprint)
         
         # Add all the entities from this standalone circuit to the final blueprint
         treeNode_ItemProvider_instance.AddPrototypesToBlueprint()
@@ -170,7 +172,7 @@ def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeB
             buildDirectionList_Head = buildDirectionList.pop(0)
             
             # Recurse with current child node and build direction in scope
-            BuildProductionChain(tree, child.identifier, blueprint, buildDirectionList_Head, treeNode_ItemProvider_instance.ownPrototypes[-1], newEntityGenerator_globalInstance)
+            BuildProductionChain(tree, child.identifier, blueprint, buildDirectionList_Head, treeNode_ItemProvider_instance.ownPrototypes[-1])
     
     # Enter this branch for all nodes that have a parent, aka all nodes except the parent node
     # The position of all these nodes is relative to where the location of the standalone circuit
@@ -179,7 +181,7 @@ def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeB
         #print(f"Adding {treeNode.tag} to blueprint")
         
         # Instantiate the current node (because the "tree" is build of classes and not objects)
-        treeNode_ItemProvider_instance = treeNode.data(blueprint, parentAnchor, newEntityGenerator_globalInstance)
+        treeNode_ItemProvider_instance = treeNode.data(blueprint, parentAnchor)
         
         # Build the current standalone circuit based on the build direction of the previous
         #   recursive call
@@ -201,7 +203,7 @@ def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeB
             buildDirectionList_Head = buildDirectionList.pop(0)
                 
             # Recurse with current child node and build direction in scope        
-            BuildProductionChain(tree, child.identifier, blueprint, buildDirectionList_Head, treeNode_ItemProvider_instance.ownPrototypes[-1], newEntityGenerator_globalInstance)
+            BuildProductionChain(tree, child.identifier, blueprint, buildDirectionList_Head, treeNode_ItemProvider_instance.ownPrototypes[-1])
         
         
         
@@ -211,19 +213,12 @@ def BuildProductionChain(tree: Tree, nodeIdentifier, blueprint: Blueprint, nodeB
 
 def main():
     
-    # Get start time for benchmarking
-    start_time = time.perf_counter()
-
-    # Initializing the blueprint
-    newBlueprint = Blueprint()
-    newBlueprint.label = "Test blueprints"
-
-
-    newEntityGenerator_globalInstance = NewEntityGenerator()
-        
     if len(sys.argv) > 3:
         # The first argument (sys.argv[0]) is the script name
         # The actual arguments start from sys.argv[1]
+        
+        #print(sys.argv)
+        
         arguments = sys.argv[1:]
         #print("Arguments passed:", arguments)
 
@@ -231,38 +226,145 @@ def main():
         queryAmount = sys.argv[1]
         queryOutput = sys.argv[2]
         queryRate = sys.argv[3]
-
-        # Get the root node of the tree (and instantiate it)
-        rootNode_default = SelectInitialStructure("default")#(newBlueprint, newEntityGenerator_globalInstance)
-        
-        lastProductionNode = SelectInitialStructure(queryOutput)#(newBlueprint, rootNode_default.ownPrototypes[-1], newEntityGenerator_globalInstance)
+        queryRunOrTest = sys.argv[4]
 
 
 
-        # Instantiate a tree and add the rootnode to it
-        tree = Tree()
-        rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
-        
-        
-        lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
+        if (queryRunOrTest == "-t"):
+            
+            # Initialize a runtime accumulator, so an average runtime 
+            #   can be calculated later
+            runTimeAccumulator = 0
+            
+            # 100 iterations is an arbitrary amount, but should result
+            #   in a decently accurate average runtime
+            #
+            # Obviously an even larger amount of iterations would be better
+            for i in range(100):
+                
+                start_time = time.perf_counter()
 
-        AddNode(tree, lastProductionNode_NODE)
-        
-        BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0), newEntityGenerator_globalInstance)
-        
-        output_string = newBlueprint.to_string()
-        pyperclip.copy(output_string)
-        
-        end_time = time.perf_counter()
-        
-        elapsed_time = end_time - start_time
-        
-        print(" ")
-        print(f"It took {elapsed_time} to generate the production chain")
-        print(" ")
-        print("The blueprint string has been copied to your clipboard and is ready to be pasted into Factorio")
-        
-        #TestPrintTree(tree)
+                # Initializing the blueprint
+                newBlueprint = Blueprint()
+                newBlueprint.label = f"Blueprint of {queryOutput} production chain"
+                # Get the root node of the tree (and instantiate it)
+                rootNode_default = SelectInitialStructure("default")#(newBlueprint, newEntityGenerator_globalInstance)
+                
+                lastProductionNode = SelectInitialStructure(queryOutput)#(newBlueprint, rootNode_default.ownPrototypes[-1], newEntityGenerator_globalInstance)
+
+                # Instantiate a tree and add the rootnode to it
+                tree = Tree()
+                rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
+                
+                lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
+
+                AddNode(tree, lastProductionNode_NODE)
+                
+                BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+                
+                output_string = newBlueprint.to_string()
+                pyperclip.copy(output_string)
+                
+                end_time = time.perf_counter()
+                
+                elapsed_time = end_time - start_time
+                
+                runTimeAccumulator += elapsed_time
+                
+            runTimeAverage = (runTimeAccumulator / 100) * 1000
+            
+            print(" ")
+            print(f"The average time it took to generate the production chain over 100 iterations was: {runTimeAverage} milliseconds")
+            
+            
+        elif (queryRunOrTest == "-tverbose"):
+            
+            # Initialize a runtime accumulator, so an average runtime 
+            #   can be calculated later
+            runTimeAccumulator = 0
+            
+            # 100 iterations is an arbitrary amount, but should result
+            #   in a decently accurate average runtime
+            #
+            # Obviously an even larger amount of iterations would be better
+            for i in range(100):
+                
+                start_time = time.perf_counter()
+
+                # Initializing the blueprint
+                newBlueprint = Blueprint()
+                newBlueprint.label = f"Blueprint of {queryOutput} production chain"
+                # Get the root node of the tree (and instantiate it)
+                rootNode_default = SelectInitialStructure("default")#(newBlueprint, newEntityGenerator_globalInstance)
+                
+                lastProductionNode = SelectInitialStructure(queryOutput)#(newBlueprint, rootNode_default.ownPrototypes[-1], newEntityGenerator_globalInstance)
+
+                # Instantiate a tree and add the rootnode to it
+                tree = Tree()
+                rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
+                
+                lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
+
+                AddNode(tree, lastProductionNode_NODE)
+                
+                BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+                
+                output_string = newBlueprint.to_string()
+                pyperclip.copy(output_string)
+                
+                end_time = time.perf_counter()
+                
+                elapsed_time = end_time - start_time
+                
+                print("")
+                print(f"The {i}-th generation of the {queryOutput} production chain took: {elapsed_time * 1000}")
+                
+                runTimeAccumulator += elapsed_time
+                
+            runTimeAverage = (runTimeAccumulator / 100) * 1000
+            
+            print(" ")
+            print(f"The average time it took to generate the production chain over 100 iterations was: {runTimeAverage} milliseconds")
+            
+    
+        elif (queryRunOrTest == "-r"):
+            
+            #start_time = time.perf_counter()
+
+            # Initializing the blueprint
+            newBlueprint = Blueprint()
+            newBlueprint.label = f"Blueprint of {queryOutput} production chain"
+            # Get the root node of the tree (and instantiate it)
+            rootNode_default = SelectInitialStructure("default")#(newBlueprint, newEntityGenerator_globalInstance)
+            
+            lastProductionNode = SelectInitialStructure(queryOutput)#(newBlueprint, rootNode_default.ownPrototypes[-1], newEntityGenerator_globalInstance)
+
+            # Instantiate a tree and add the rootnode to it
+            tree = Tree()
+            rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
+            
+            lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
+
+            AddNode(tree, lastProductionNode_NODE)
+            
+            BuildProductionChain(tree, tree.root, newBlueprint, "north", (0,0))
+            
+            output_string = newBlueprint.to_string()
+            pyperclip.copy(output_string)
+            
+            #end_time = time.perf_counter()
+            
+            #elapsed_time = (end_time - start_time) * 1000
+            
+            # print(" ")
+            # print(f"It took {elapsed_time} milliseconds to generate the production chain")
+            print(" ")
+            print(f"The blueprint string for the {queryOutput} production chain has been copied to your clipboard and is ready to be pasted into Factorio")
+            
+            #TestPrintTree(tree)
+            
+        else:
+            print("Incorrect run or test parameter given")
 
     else:
         print("Not enough arguments provided.")

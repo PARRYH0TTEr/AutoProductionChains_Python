@@ -15,9 +15,8 @@ class DefaultAnchor:
     name = "output"
     dependencies = []
     
-    def __init__(self, blueprint, newEntityGenerator: NewEntityGenerator):
+    def __init__(self, blueprint):
         self.blueprint = blueprint
-        self.newEntityGenerator = newEntityGenerator
         self.ownPrototypes = self.InitOwnPrototypes()
         self.propagationAnchor = self.ownPrototypes[-1]
         
