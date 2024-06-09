@@ -74,7 +74,7 @@ Step 05: Once ingame, press the "Import String" button
 
 ![Step 05](https://github.com/PARRYH0TTEr/AutoProductionChains_Python/blob/master/GithubRepo/Images/Factorio_Guide05.png)
 
-Step 06: Paste in the generated string from running the program
+Step 06: Paste in the generated string from running the program in the textbox and press "Import"
 
 ![Step 06](https://github.com/PARRYH0TTEr/AutoProductionChains_Python/blob/master/GithubRepo/Images/Factorio_Guide06.png)
 
