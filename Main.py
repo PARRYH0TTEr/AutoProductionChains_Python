@@ -1,6 +1,9 @@
 from draftsman import utils
 from draftsman.blueprintable import Blueprint
 from draftsman.entity import new_entity
+from draftsman.utils import string_to_JSON
+
+
 import json
 import pyperclip
 import sys
@@ -73,9 +76,6 @@ def AddNode(tree: Tree, parentNode_NODE):
         return
     else:
         for dependency in parentNode_NODE.data.dependencies:
-            #FIXME1.1 -> Giving the anchor of the parent is incorrect here, fix once the prototype is working!
-            #tempInstance = dependency(parentNode_NODE.data.blueprint, parentNode_NODE.data.ownPrototypes[-1], newEntityGenerator_globalInstance)
-            
             tempInstance_NODE = tree.create_node(dependency.name, parent=parentNode_NODE.identifier, data=dependency)
             AddNode(tree, tempInstance_NODE)
 
@@ -357,6 +357,7 @@ def main():
             print(f"The blueprint string for the {queryOutput} production chain has been copied to your clipboard and is ready to be pasted into Factorio")
             
             #TestPrintTree(tree)
+            
             
         else:
             print("Incorrect run or test parameter given")
