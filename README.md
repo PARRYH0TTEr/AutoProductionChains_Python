@@ -4,7 +4,7 @@ This repository hosts the implementation of the program I developed alongside my
 
 ## Usage
 
-Make sure you have Factorio installed, as the project utilizes the "import string" feature to import the generated production chains..
+Make sure you have Factorio installed, as the project utilizes the "import string" feature to import the generated production chains.
 
 ### Downloading
 
