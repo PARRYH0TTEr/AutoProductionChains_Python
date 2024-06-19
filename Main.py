@@ -329,13 +329,13 @@ def main():
             # Instantiate a tree and add the rootnode to it
             tree = Tree()
             rootNode_NODE = tree.create_node(rootNode_default.name, parent=None, data=rootNode_default)
-            
+
             # Have to create the child node of the final output, because the defaultAnchor does
                 #   not have any providers in its dependency list
             lastProductionNode_NODE = tree.create_node(lastProductionNode.name, parent=rootNode_NODE.identifier, data=lastProductionNode)
+            AddNode(tree, lastProductionNode_NODE)
 
             # Construct the n-ary tree
-            AddNode(tree, lastProductionNode_NODE)
             
             # Build the production chain based on the constructed n-ary tree
             #
